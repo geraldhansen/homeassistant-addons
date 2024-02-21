@@ -1,4 +1,4 @@
 # https://developers.home-assistant.io/docs/add-ons/repository#repository-configuration
-name: Gerald Hansen Home Assistant add-on repository
-url: 'https://github.com/geraldhansen/homeassistant-addons'
-maintainer: Gerald Hansen <ger@ldhansen.de>
+name: Example Home Assistant add-on repository
+url: 'https://github.com/home-assistant/addons-example'
+maintainer: Awesome Maintainer <awesome@example.com>
