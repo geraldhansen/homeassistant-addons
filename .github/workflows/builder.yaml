@@ -11,6 +11,7 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   init:
@@ -98,7 +99,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build ${{ matrix.addon }} add-on
+      - name: Build and push ${{ matrix.addon }} add-on
         if: steps.check.outputs.build_arch == 'true'
         uses: home-assistant/builder@2024.01.0
         with:
