@@ -1,8 +1,6 @@
 ARG BUILD_FROM
 FROM ${BUILD_FROM}
 
-ENV LANG C.UTF-8
-
 COPY run.sh /
 RUN chmod a+x /run.sh
 
@@ -13,6 +11,7 @@ RUN apk add -v --update --no-cache \
         groff \
         less \
         jq
-RUN pip3 install --upgrade awscli
+RUN pip3 install --no-cache-dir awscli
+RUN aws --version   # Just to make sure its installed alright
     
 CMD [ "/run.sh" ]  

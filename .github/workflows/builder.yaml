@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         # addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
-        addon: ["example", "s3-backup"]
+        addon: ["s3-backup"]
         arch: ["aarch64", "amd64", "armhf", "armv7", "i386"]
 
     steps:
@@ -90,10 +90,6 @@ jobs:
              echo "${{ matrix.arch }} is not a valid arch for ${{ matrix.addon }}, skipping build";
              echo "build_arch=false" >> $GITHUB_OUTPUT;
           fi
-
-      # - name: 'Login to GitHub Container Registry'
-      #   run: |
-      #     echo $CR_PAT | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Login to GitHub Container Registry
         if: env.BUILD_ARGS != '--test'
