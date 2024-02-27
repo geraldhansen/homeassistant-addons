@@ -64,7 +64,7 @@ jobs:
     strategy:
       matrix:
         # addon: ${{ fromJson(needs.init.outputs.changed_addons) }}
-        addon: ["example"]
+        addon: ["example", "s3-backup"]
         arch: ["aarch64", "amd64", "armhf", "armv7", "i386"]
 
     steps:
