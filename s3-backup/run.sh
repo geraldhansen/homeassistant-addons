@@ -20,6 +20,7 @@ export AWS_REGION="$bucket_region"
 
 bashio::log.debug "Using AWS CLI version: '$(aws --version)'"
 bashio::log.debug "Command: 'aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://$bucket_name/ --no-progress --region $bucket_region
+bashio::log_debug "More log messages"
 aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://"$bucket_name"/ --no-progress --region "$bucket_region"
 
 if bashio::var.true "${delete_local_backups}"; then
