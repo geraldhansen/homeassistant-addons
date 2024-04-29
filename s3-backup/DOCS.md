@@ -56,21 +56,25 @@ Example add-on configuration:
 aws_access_key: AKXXXXXXXXXXXXXXXX
 aws_secret_access_key: XXXXXXXXXXXXXXXX
 bucket_name: my-bucket
+endpoint_url: https://us-east-1.amazonaws.com
 delete_local_backups: true
 local_backups_to_keep: 3
 ```
 
 ### Option: `aws_access_key` (required)
-AWS IAM access key used to access the S3 bucket.
+Access key id used to access the S3 bucket.
 
 ### Option: `aws_secret_access_key` (required)
-AWS IAM secret access key used to access the S3 bucket.
+Secret access key used to access the S3 bucket.
 
 ### Option: `bucket_name` (required)
-Amazon S3 bucket used to store backups.
+S3 bucket name used to store backups.
+
+### Option: `endpoint_url` (optional)
+S3 endpoint url for your provider
 
 ### Option: `bucket_region` (optional, Default: eu-central-1)
-AWS region where the S3 bucket was created. See https://aws.amazon.com/about-aws/global-infrastructure/ for all available regions.
+Region where the S3 bucket was created. See https://aws.amazon.com/about-aws/global-infrastructure/ for all available regions.
 
 ### Option: `storage_class` (optional, Default: STANDARD)
 Amazon S3 storage class to use for the synced objects, when uploading files to S3. One of STANDARD, REDUCED_REDUNDANCY, STANDARD_IA, ONEZONE_IA, INTELLIGENT_TIERING, GLACIER, DEEP_ARCHIVE. For more information see https://aws.amazon.com/s3/storage-classes/.
@@ -78,7 +82,7 @@ Amazon S3 storage class to use for the synced objects, when uploading files to S
 ### Option: `delete_local_backups` (optional, Default: true)
 Should the addon remove oldest local backups after syncing to your Amazon S3 Bucket? You can configure how many local backups you want to keep with the Option `local_backups_to_keep`. Oldest Backups will get deleted first.
 
-### Option: `local_backups_to_keep` (optional, Default: 3)
+### Option: `local_backups_to_keep` (optional, Default: 4)
 How many backups you want to keep locally? If you want to disable automatic local cleanup, set `delete_local_backups` to false.
 
 If you also want to automatically delete backups to keep your Amazon S3 Bucket clean, or change the storage class for backups to safe some money, you should take a look at S3 Lifecycle Rules (https://docs.aws.amazon.com/AmazonS3/latest/userguide/how-to-set-lifecycle-configuration-intro.html).

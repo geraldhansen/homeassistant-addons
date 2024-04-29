@@ -21,15 +21,17 @@
     "aws_access_key": "",
     "aws_secret_access_key": "",
     "bucket_name": "",
+    "endpoint_url": "",
     "bucket_region": "",
     "storage_class": "",
     "delete_local_backups": true,
-    "local_backups_to_keep": 3
+    "local_backups_to_keep": 4
   },
   "schema": {
     "aws_access_key": "str",
     "aws_secret_access_key": "password",
     "bucket_name": "str",
+    "endpoint_url": "str",
     "bucket_region": "str?",
     "storage_class": "str?",
     "delete_local_backups": "bool",
