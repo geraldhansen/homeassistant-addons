@@ -16,12 +16,24 @@ jq_filter=".backups|=sort_by(.date)|.backups|reverse|.[$local_backups_to_keep:]|
 
 export AWS_ACCESS_KEY_ID="$(bashio::config 'aws_access_key')"
 export AWS_SECRET_ACCESS_KEY="$(bashio::config 'aws_secret_access_key')"
-export AWS_REGION="$bucket_region"
+
+storage_class_option=""
+if [[ -n "$storage_class" ]]; then
+    bashio::log.debug "The 'storage_class' is set"
+    storage_class_option="--storage-class \"$storage_class\""
+    bashio::log.debug "Storage class option: '$storage_class_option'"
+fi
+bucket_region_option=""
+if [[ -n "$bucket_region" ]]; then
+    bashio::log.debug "The 'bucket_region' is set"
+    bucket_region_option="--region \"$bucket_region\""
+    bashio::log.debug "Bucket region option: '$bucket_region_option'"
+    export AWS_REGION="$bucket_region"
+fi
 
 bashio::log.debug "Using AWS CLI version: '$(aws --version)'"
-bashio::log.debug "Command: 'aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://$bucket_name/ --no-progress --region $bucket_region
-bashio::log_debug "More log messages"
-aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://"$bucket_name"/ --no-progress --region "$bucket_region"
+bashio::log.debug "Command: 'aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://$bucket_name/ --no-progress $bucket_region_option $storage_class_option"
+aws --endpoint-url $endpoing_url s3 sync $monitor_path s3://"$bucket_name"/ --no-progress $bucket_region_option $storage_class_option
 
 if bashio::var.true "${delete_local_backups}"; then
     bashio::log.info "Will delete local backups except the '${local_backups_to_keep}' newest ones."
@@ -36,4 +48,4 @@ else
     bashio::log.info "Will not delete any local backups since 'delete_local_backups' is set to 'false'"
 fi
 
-bashio::log.info "Finished Amazon S3 Backup."
+bashio::log.info "Finished S3 Backup."
