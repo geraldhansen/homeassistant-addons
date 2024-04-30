@@ -11,7 +11,7 @@ endpoint_url="$(bashio::config 'endpoint_url')"
 storage_class="$(bashio::config 'storage_class')"
 bucket_region="$(bashio::config 'bucket_region')"
 delete_local_backups="$(bashio::config 'delete_local_backups' 'true')"
-local_backups_to_keep="$(bashio::config 'local_backups_to_keep' '3')"
+local_backups_to_keep="$(bashio::config 'local_backups_to_keep' '4')"
 monitor_path="/backup"
 jq_filter=".backups|=sort_by(.date)|.backups|reverse|.[$local_backups_to_keep:]|.[].slug"
 
