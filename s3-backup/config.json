@@ -1,0 +1,46 @@
+{
+  "name": "S3 Backup",
+  "version": "0.0.2",
+  "slug": "s3-backup",
+  "description": "Sync Backups to a S3 bucket",
+  "url": "https://github.com/geraldhansen/homeassistant-addons/tree/main/s3-backup",
+  "arch": [
+    "aarch64",
+    "amd64",
+    "armhf",
+    "armv7",
+    "i386"
+  ],
+  "boot": "manual",
+  "init": false,
+  "startup": "once",
+  "advanced": true,
+  "hassio_api": true,
+  "hassio_role": "backup",
+  "ingress": true,
+  "panel_icon": "mdi:pail",
+  "panel_title": "S3 Backups",
+  "options": {
+    "aws_access_key_id": "",
+    "aws_secret_access_key": "",
+    "bucket_name": "",
+    "endpoint_url": "",
+    "bucket_region": "",
+    "storage_class": "",
+    "delete_local_backups": true,
+    "local_backups_to_keep": 4
+  },
+  "schema": {
+    "aws_access_key_id": "str",
+    "aws_secret_access_key": "password",
+    "bucket_name": "str",
+    "endpoint_url": "str",
+    "bucket_region": "str?",
+    "storage_class": "str?",
+    "delete_local_backups": "bool",
+    "local_backups_to_keep": "int"
+  },
+  "map": [
+    "backup:rw"
+  ]
+}

@@ -10,6 +10,26 @@ Add-on documentation: <https://developers.home-assistant.io/docs/add-ons>
 
 This repository contains the following add-ons
 
+### [S3 Backup](/s3-backup)
+
+![Supports aarch64 Architecture][aarch64-shield]
+![Supports amd64 Architecture][amd64-shield]
+![Supports armhf Architecture][armhf-shield]
+![Supports armv7 Architecture][armv7-shield]
+![Supports i386 Architecture][i386-shield]
+
+Sync your Home Assistant backups to a S3 provider of your choice (AWS, MinIO, IONOS, Contabo ...)
+
+### [Example add-on](./example)
+
+![Supports aarch64 Architecture][aarch64-shield]
+![Supports amd64 Architecture][amd64-shield]
+![Supports armhf Architecture][armhf-shield]
+![Supports armv7 Architecture][armv7-shield]
+![Supports i386 Architecture][i386-shield]
+
+_Example add-on to use as a blueprint for new add-ons._
+
 <!--
 
 Notes to developers after forking or using the github template feature:
