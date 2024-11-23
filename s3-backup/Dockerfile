@@ -1,17 +1,11 @@
 ARG BUILD_FROM
-FROM ${BUILD_FROM}
+FROM $BUILD_FROM
 
-COPY run.sh /
+RUN apk add --no-cache python3 py3-pip && \
+    python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --no-cache-dir flask boto3 requests
+
+COPY rootfs /
 RUN chmod a+x /run.sh
 
-# add aws-cli and deps
-RUN apk add -v --update --no-cache \
-        python3 \
-        py3-pip \
-        groff \
-        less \
-        jq
-RUN pip3 install --no-cache-dir awscli
-RUN aws --version   # Just to make sure its installed alright
-    
-CMD [ "/run.sh" ]  
+CMD ["/run.sh"]
