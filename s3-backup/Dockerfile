@@ -14,4 +14,6 @@ RUN apk add -v --update --no-cache \
 RUN pip3 install --no-cache-dir awscli
 RUN aws --version   # Just to make sure its installed alright
     
-CMD [ "/run.sh" ]  
+#CMD [ "/run.sh" ]  
+# Specify the default command to run the Flask app
+CMD ["python3", "/app/app.py"]
