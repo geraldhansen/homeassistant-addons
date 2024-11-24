@@ -30,6 +30,16 @@ Sync your Home Assistant backups to a S3 provider of your choice (AWS, MinIO, IO
 
 _Example add-on to use as a blueprint for new add-ons._
 
+## Developer Informations
+
+Test build localy
+
+    docker build --build-arg BUILD_FROM=ghcr.io/home-assistant/amd64-base:3.15 -t s3-backup:latest -f s3-backup/Dockerfile s3-backup
+
+Run gunicorn localy
+
+    python3 -m gunicorn --bind 0.0.0.0:8099 s3-backup.s3-backup.s3-backup:app
+
 <!--
 
 Notes to developers after forking or using the github template feature:

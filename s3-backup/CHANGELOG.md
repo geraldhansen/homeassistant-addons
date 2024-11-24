@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.3
+
+* Add Ingress part with flask and gunicron
+
 ## 0.0.2
 
 * Make storage_class and region real optional parameter
