@@ -11,4 +11,5 @@ def hello():
     return jsonify(message="Hello from the Flask Add-on!")
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8099)
+    # This block will not be executed by Gunicorn
+    app.run(host="0.0.0.0", port=5000)
