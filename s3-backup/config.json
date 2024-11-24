@@ -1,6 +1,6 @@
 {
   "name": "S3 Backup",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "slug": "s3-backup",
   "description": "Sync Backups to a S3 bucket",
   "url": "https://github.com/geraldhansen/homeassistant-addons/tree/main/s3-backup",

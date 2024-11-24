@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.4
+
+* Use correct run command
+
 ## 0.0.3
 
 * Add Ingress part with flask and gunicron
