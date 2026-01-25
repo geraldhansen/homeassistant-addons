@@ -11,7 +11,7 @@ RUN apk add -v --update --no-cache \
         groff \
         less \
         jq \
-        && pip3 install flask gunicorn
+        && pip3 install flask gunicorn boto3 requests
 RUN pip3 install --no-cache-dir awscli
 RUN aws --version   # Just to make sure its installed alright
 

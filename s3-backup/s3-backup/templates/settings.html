@@ -1,0 +1,388 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - S3 Backup{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="bi bi-gear"></i> Settings</h2>
+        <p class="text-muted">Configure your S3 backup settings. Changes are saved automatically.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-cloud"></i> S3 Configuration</h5>
+            </div>
+            <div class="card-body">
+                <div id="config-alert" class="alert alert-info" style="display: none;"></div>
+                
+                <form id="settingsForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="aws_access_key_id" class="form-label">
+                                    AWS Access Key ID <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="aws_access_key_id" 
+                                       value="{{ config.aws_access_key_id }}" required>
+                                <div class="form-text">Your AWS access key ID for S3 access</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="aws_secret_access_key" class="form-label">
+                                    AWS Secret Access Key <span class="text-danger">*</span>
+                                </label>
+                                <input type="password" class="form-control" id="aws_secret_access_key" 
+                                       value="{{ config.aws_secret_access_key }}" required>
+                                <div class="form-text">Your AWS secret access key</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bucket_name" class="form-label">
+                                    S3 Bucket Name <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" class="form-control" id="bucket_name" 
+                                       value="{{ config.bucket_name }}" required>
+                                <div class="form-text">Name of your S3 bucket for backups</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="bucket_region" class="form-label">Bucket Region</label>
+                                <select class="form-select" id="bucket_region">
+                                    <option value="us-east-1" {{ 'selected' if config.bucket_region == 'us-east-1' else '' }}>US East (N. Virginia)</option>
+                                    <option value="us-west-1" {{ 'selected' if config.bucket_region == 'us-west-1' else '' }}>US West (N. California)</option>
+                                    <option value="us-west-2" {{ 'selected' if config.bucket_region == 'us-west-2' else '' }}>US West (Oregon)</option>
+                                    <option value="eu-west-1" {{ 'selected' if config.bucket_region == 'eu-west-1' else '' }}>EU (Ireland)</option>
+                                    <option value="eu-central-1" {{ 'selected' if config.bucket_region == 'eu-central-1' else '' }}>EU (Frankfurt)</option>
+                                    <option value="ap-southeast-1" {{ 'selected' if config.bucket_region == 'ap-southeast-1' else '' }}>Asia Pacific (Singapore)</option>
+                                    <option value="ap-southeast-2" {{ 'selected' if config.bucket_region == 'ap-southeast-2' else '' }}>Asia Pacific (Sydney)</option>
+                                    <option value="ap-northeast-1" {{ 'selected' if config.bucket_region == 'ap-northeast-1' else '' }}>Asia Pacific (Tokyo)</option>
+                                </select>
+                                <div class="form-text">AWS region where your bucket is located</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="endpoint_url" class="form-label">Custom Endpoint URL</label>
+                                <input type="url" class="form-control" id="endpoint_url" 
+                                       value="{{ config.endpoint_url }}" placeholder="https://s3.example.com">
+                                <div class="form-text">Optional: For S3-compatible services (MinIO, DigitalOcean Spaces, etc.)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="storage_class" class="form-label">Storage Class</label>
+                                <select class="form-select" id="storage_class">
+                                    <option value="STANDARD" {{ 'selected' if config.storage_class == 'STANDARD' else '' }}>Standard</option>
+                                    <option value="STANDARD_IA" {{ 'selected' if config.storage_class == 'STANDARD_IA' else '' }}>Standard-IA</option>
+                                    <option value="GLACIER" {{ 'selected' if config.storage_class == 'GLACIER' else '' }}>Glacier</option>
+                                    <option value="DEEP_ARCHIVE" {{ 'selected' if config.storage_class == 'DEEP_ARCHIVE' else '' }}>Glacier Deep Archive</option>
+                                </select>
+                                <div class="form-text">S3 storage class for cost optimization</div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-sliders"></i> Backup Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="delete_local_backups" 
+                                   {{ 'checked' if config.delete_local_backups else '' }}>
+                            <label class="form-check-label" for="delete_local_backups">
+                                <strong>Delete Local Backups</strong>
+                            </label>
+                            <div class="form-text">
+                                Automatically delete old local backups after uploading to S3
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="local_backups_to_keep" class="form-label">Local Backups to Keep</label>
+                            <input type="number" class="form-control" id="local_backups_to_keep" 
+                                   value="{{ config.local_backups_to_keep }}" min="1" max="50">
+                            <div class="form-text">Number of recent backups to keep locally</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Connection Status</h5>
+            </div>
+            <div class="card-body">
+                <div id="connection-status" class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Testing connection...</span>
+                    </div>
+                    <p class="mt-2">Testing S3 connection...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-question-circle"></i> Help</h5>
+            </div>
+            <div class="card-body">
+                <h6>AWS Credentials</h6>
+                <p class="small">
+                    You can create AWS credentials in the 
+                    <a href="https://console.aws.amazon.com/iam/" target="_blank" class="text-decoration-none">
+                        AWS IAM Console <i class="bi bi-box-arrow-up-right"></i>
+                    </a>. 
+                    Make sure to grant S3 permissions to your bucket.
+                </p>
+                
+                <h6 class="mt-3">S3-Compatible Services</h6>
+                <p class="small">
+                    This addon works with S3-compatible services like MinIO, DigitalOcean Spaces, 
+                    Wasabi, and others. Use the custom endpoint URL field for these services.
+                </p>
+                
+                <h6 class="mt-3">Storage Classes</h6>
+                <ul class="small">
+                    <li><strong>Standard:</strong> For frequently accessed data</li>
+                    <li><strong>Standard-IA:</strong> For infrequently accessed data</li>
+                    <li><strong>Glacier:</strong> Long-term archival (retrieval time: minutes to hours)</li>
+                    <li><strong>Deep Archive:</strong> Lowest cost (retrieval time: 12+ hours)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" onclick="testConnection()">
+                        <i class="bi bi-wifi"></i> Test Connection
+                    </button>
+                    <button class="btn btn-success" onclick="saveSettings()">
+                        <i class="bi bi-check-circle"></i> Save Settings
+                    </button>
+                    <hr>
+                    <button class="btn btn-outline-secondary" onclick="exportSettings()">
+                        <i class="bi bi-download"></i> Export Settings
+                    </button>
+                    <button class="btn btn-outline-warning" onclick="resetToDefaults()">
+                        <i class="bi bi-arrow-clockwise"></i> Reset to Defaults
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentConfig = {{ config | tojson }};
+
+function testConnection() {
+    const statusDiv = document.getElementById('connection-status');
+    statusDiv.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Testing...</span>
+        </div>
+        <p class="mt-2">Testing connection...</p>
+    `;
+    
+    // Get current form values
+    const formData = getFormData();
+    
+    fetch('/api/test-connection', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            statusDiv.innerHTML = `
+                <div class="text-success">
+                    <i class="bi bi-check-circle" style="font-size: 2rem;"></i>
+                    <p class="mt-2"><strong>Connection Successful!</strong></p>
+                    <small class="text-muted">Bucket: ${data.bucket_name}</small>
+                </div>
+            `;
+        } else {
+            statusDiv.innerHTML = `
+                <div class="text-danger">
+                    <i class="bi bi-x-circle" style="font-size: 2rem;"></i>
+                    <p class="mt-2"><strong>Connection Failed</strong></p>
+                    <small>${data.error || 'Unknown error'}</small>
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusDiv.innerHTML = `
+            <div class="text-danger">
+                <i class="bi bi-exclamation-triangle" style="font-size: 2rem;"></i>
+                <p class="mt-2"><strong>Test Failed</strong></p>
+                <small>Network error occurred</small>
+            </div>
+        `;
+    });
+}
+
+function getFormData() {
+    return {
+        aws_access_key_id: document.getElementById('aws_access_key_id').value,
+        aws_secret_access_key: document.getElementById('aws_secret_access_key').value,
+        bucket_name: document.getElementById('bucket_name').value,
+        bucket_region: document.getElementById('bucket_region').value,
+        endpoint_url: document.getElementById('endpoint_url').value,
+        storage_class: document.getElementById('storage_class').value,
+        delete_local_backups: document.getElementById('delete_local_backups').checked,
+        local_backups_to_keep: parseInt(document.getElementById('local_backups_to_keep').value)
+    };
+}
+
+function saveSettings() {
+    const formData = getFormData();
+    
+    // Basic validation
+    if (!formData.aws_access_key_id || !formData.aws_secret_access_key || !formData.bucket_name) {
+        showAlert('Please fill in all required fields (marked with *)', 'warning');
+        return;
+    }
+    
+    fetch('/api/save-settings', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('Settings saved successfully!', 'success');
+            currentConfig = formData;
+            updateStatusIndicator('success', 'Settings Saved');
+        } else {
+            showAlert('Error saving settings: ' + (data.error || 'Unknown error'), 'danger');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('Failed to save settings. Please try again.', 'danger');
+    });
+}
+
+function showAlert(message, type) {
+    const alertDiv = document.getElementById('config-alert');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'x-circle'}"></i>
+        ${message}
+    `;
+    alertDiv.style.display = 'block';
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        alertDiv.style.display = 'none';
+    }, 5000);
+}
+
+function exportSettings() {
+    const settings = getFormData();
+    // Remove sensitive data for export
+    const exportData = { ...settings };
+    exportData.aws_access_key_id = '***REDACTED***';
+    exportData.aws_secret_access_key = '***REDACTED***';
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 's3-backup-settings.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function resetToDefaults() {
+    if (confirm('Reset all settings to defaults? This will clear your current configuration.')) {
+        document.getElementById('aws_access_key_id').value = '';
+        document.getElementById('aws_secret_access_key').value = '';
+        document.getElementById('bucket_name').value = '';
+        document.getElementById('bucket_region').value = 'us-east-1';
+        document.getElementById('endpoint_url').value = '';
+        document.getElementById('storage_class').value = 'STANDARD';
+        document.getElementById('delete_local_backups').checked = true;
+        document.getElementById('local_backups_to_keep').value = 4;
+        
+        showAlert('Settings reset to defaults. Don\'t forget to save!', 'info');
+    }
+}
+
+// Auto-save on change (with debounce)
+let saveTimeout;
+function autoSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        const formData = getFormData();
+        // Only auto-save if required fields are filled
+        if (formData.aws_access_key_id && formData.aws_secret_access_key && formData.bucket_name) {
+            saveSettings();
+        }
+    }, 2000);
+}
+
+// Add event listeners for auto-save
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('#settingsForm input, #settingsForm select');
+    inputs.forEach(input => {
+        input.addEventListener('change', autoSave);
+        if (input.type === 'text' || input.type === 'password' || input.type === 'url') {
+            input.addEventListener('input', autoSave);
+        }
+    });
+    
+    // Initial connection test
+    testConnection();
+});
+
+// Check for unsaved changes
+window.addEventListener('beforeunload', function(e) {
+    const currentFormData = getFormData();
+    const hasChanges = JSON.stringify(currentFormData) !== JSON.stringify(currentConfig);
+    
+    if (hasChanges) {
+        e.preventDefault();
+        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+        return e.returnValue;
+    }
+});
+</script>
+{% endblock %}

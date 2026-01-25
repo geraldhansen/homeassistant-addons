@@ -1,5 +1,7 @@
 # Home Assistant Add-on: S3 Backup
 
+A comprehensive Home Assistant add-on for backing up your Home Assistant instance to Amazon S3 or compatible storage services, featuring a modern web interface.
+
 ## Installation
 
 Follow these steps to get the add-on installed on your system:
@@ -7,7 +9,34 @@ Follow these steps to get the add-on installed on your system:
 1. Enable **Advanced Mode** in your Home Assistant user profile.
 2. Navigate in your Home Assistant frontend to **Settings** -> **Add-ons** -> **ADD-ON STORE**.
 3. Add this url as new repository url "https://github.com/geraldhansen/homeassistant-addons"
-3. Search for "S3 Backup" add-on and click on it.
+4. Search for "S3 Backup" add-on and click on it.
+5. Click **Install** to install the add-on.
+6. Configure the add-on (see configuration section below).
+7. Click **Start** to start the add-on.
+8. Click **Open Web UI** to access the management interface.
+
+## Web Interface
+
+This add-on features a comprehensive web interface with three main sections:
+
+### Dashboard
+- Overview of local and S3 backups
+- System status and statistics
+- Quick backup creation
+- Real-time connection status monitoring
+
+### Backups
+- Detailed backup management with tabbed interface
+- Upload local backups to S3
+- Download backups from S3
+- View backup details and metadata
+- Delete old backups from either location
+
+### Settings
+- Configure S3 credentials and settings
+- Test S3 connection before saving
+- Auto-save functionality
+- Built-in help and documentation
 4. Click on the "INSTALL" button.
 
 ## How to use
