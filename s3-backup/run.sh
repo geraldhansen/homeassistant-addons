@@ -6,7 +6,7 @@
 
 bashio::log.info "Starting Amazon S3 Backup..."
 bashio::log.info "start gunicorn"
-exec gunicorn -b 0.0.0.0:8099 --access-logfile - --error-logfile - s3-backup.s3-backup:app
+exec gunicorn -b 0.0.0.0:8099 --access-logfile - --error-logfile - s3-backup:app
 
 # bashio::log.info "Starting Amazon S3 Backup..."
 

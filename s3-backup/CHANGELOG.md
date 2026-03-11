@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.0.6
+
+Test new run
+
+## 0.0.5
+
+Test new run
+
 ## 0.0.4
 
 * Use correct run command
