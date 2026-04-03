@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="ingress-path" content="__INGRESS_PATH__">
+  <title>S3 Backup</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+  <link href="static/style.css" rel="stylesheet">
+</head>
+<body class="grey lighten-4">
+
+  <!-- Navigation -->
+  <nav class="blue darken-2 z-depth-2">
+    <div class="nav-wrapper container">
+      <a href="#" class="brand-logo">
+        <i class="material-icons">backup</i>
+        <span>S3 Backup</span>
+      </a>
+      <ul class="right">
+        <li>
+          <a href="#" id="btn-backup-now" onclick="triggerBackup(event)" class="nav-action">
+            <i class="material-icons left">add_circle_outline</i>
+            <span class="hide-on-small-only">Backup Now</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" id="btn-sync-now" onclick="triggerSync(event)" class="nav-action">
+            <i class="material-icons left" id="sync-icon">sync</i>
+            <span class="hide-on-small-only">Sync</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="container" style="margin-top: 24px; padding-bottom: 40px;">
+
+    <!-- Tabs -->
+    <div class="row" style="margin-bottom: 0;">
+      <div class="col s12">
+        <ul class="tabs tabs-fixed-width white z-depth-1" id="main-tabs" style="border-radius: 4px 4px 0 0;">
+          <li class="tab col s4">
+            <a href="#tab-backups" class="active blue-text text-darken-2">
+              <i class="material-icons tiny">list</i> Backups
+            </a>
+          </li>
+          <li class="tab col s4">
+            <a href="#tab-settings" class="blue-text text-darken-2">
+              <i class="material-icons tiny">settings</i> Settings
+            </a>
+          </li>
+          <li class="tab col s4">
+            <a href="#tab-logs" class="blue-text text-darken-2">
+              <i class="material-icons tiny">subject</i> Logs
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- BACKUPS TAB                                                   -->
+    <!-- ============================================================ -->
+    <div id="tab-backups" class="white z-depth-1" style="border-radius: 0 0 4px 4px; padding: 16px;">
+
+      <!-- Status Cards -->
+      <div class="row" style="margin-bottom: 8px;">
+        <div class="col s12 m6 l3">
+          <div class="card status-card" id="card-last-backup">
+            <div class="card-content center-align">
+              <i class="material-icons status-icon" id="icon-last-backup">access_time</i>
+              <div class="status-label">Last Backup</div>
+              <div class="status-value" id="val-last-backup">Loading…</div>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m6 l3">
+          <div class="card status-card" id="card-next-backup">
+            <div class="card-content center-align">
+              <i class="material-icons status-icon" id="icon-next-backup">schedule</i>
+              <div class="status-label">Next Backup</div>
+              <div class="status-value" id="val-next-backup">Loading…</div>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m6 l3">
+          <div class="card status-card neutral">
+            <div class="card-content center-align">
+              <i class="material-icons status-icon blue-text">home</i>
+              <div class="status-label">In Home Assistant</div>
+              <div class="status-value" id="val-ha-count">–</div>
+            </div>
+          </div>
+        </div>
+        <div class="col s12 m6 l3">
+          <div class="card status-card neutral">
+            <div class="card-content center-align">
+              <i class="material-icons status-icon blue-text">cloud</i>
+              <div class="status-label">In S3</div>
+              <div class="status-value" id="val-s3-count">–</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warning / Error Banner -->
+      <div id="error-banner" style="display:none;" class="row">
+        <div class="col s12">
+          <div id="error-card" class="card" style="border-left: 4px solid #e53935;">
+            <div class="card-content" id="error-card-content" style="padding: 12px 16px;">
+              <i class="material-icons left tiny" id="error-icon" style="margin-top: 2px;">error</i>
+              <span id="error-message"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Backup Table -->
+      <div class="row">
+        <div class="col s12">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span class="grey-text text-darken-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+              Backups
+            </span>
+            <div id="loading-spinner" style="display:none;">
+              <div class="preloader-wrapper small active">
+                <div class="spinner-layer spinner-blue-only">
+                  <div class="circle-clipper left"><div class="circle"></div></div>
+                  <div class="gap-patch"><div class="circle"></div></div>
+                  <div class="circle-clipper right"><div class="circle"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <table class="striped responsive-table backup-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Created</th>
+                <th>Size</th>
+                <th style="width:70px;">HA</th>
+                <th style="width:70px;">S3</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="backup-tbody">
+              <tr><td colspan="6" class="center-align grey-text" style="padding: 32px;">Loading backups…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SETTINGS TAB                                                  -->
+    <!-- ============================================================ -->
+    <div id="tab-settings" class="white z-depth-1" style="border-radius: 0 0 4px 4px; padding: 24px;">
+      <div class="row">
+        <div class="col s12 l8 offset-l2">
+
+          <!-- S3 Configuration -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="material-icons blue-text text-darken-2">cloud</i>
+              S3 Configuration
+            </div>
+            <div class="row" style="margin-bottom: 0;">
+              <div class="input-field col s12">
+                <input id="s3_endpoint" type="url" name="s3_endpoint">
+                <label for="s3_endpoint">S3 Endpoint URL</label>
+                <span class="helper-text">Leave empty for AWS S3. For MinIO/Backblaze/R2: https://s3.example.com</span>
+              </div>
+              <div class="input-field col s12 m8">
+                <input id="s3_bucket" type="text" name="s3_bucket">
+                <label for="s3_bucket">Bucket Name</label>
+              </div>
+              <div class="input-field col s12 m4">
+                <input id="s3_region" type="text" name="s3_region" placeholder="us-east-1">
+                <label for="s3_region">Region</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input id="s3_access_key" type="text" name="s3_access_key" autocomplete="off">
+                <label for="s3_access_key">Access Key ID</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input id="s3_secret_key" type="password" name="s3_secret_key" autocomplete="new-password" placeholder="(unchanged)">
+                <label for="s3_secret_key">Secret Access Key</label>
+                <span class="helper-text">Leave empty to keep existing key</span>
+              </div>
+              <div class="input-field col s12">
+                <input id="s3_prefix" type="text" name="s3_prefix">
+                <label for="s3_prefix">Key Prefix</label>
+                <span class="helper-text">Path prefix inside the bucket, e.g. <code>ha-backups/</code></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Backup Schedule -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="material-icons blue-text text-darken-2">schedule</i>
+              Backup Schedule
+            </div>
+            <div class="row" style="margin-bottom: 0;">
+              <div class="input-field col s12 m6">
+                <input id="days_between_backups" type="number" min="0" step="1" name="days_between_backups">
+                <label for="days_between_backups">Days Between Backups</label>
+                <span class="helper-text">Set to 0 to disable automatic backups</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Retention -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="material-icons blue-text text-darken-2">delete_sweep</i>
+              Retention Policy
+            </div>
+            <div class="row" style="margin-bottom: 0;">
+              <div class="input-field col s12 m6">
+                <input id="max_backups_in_ha" type="number" min="1" step="1" name="max_backups_in_ha">
+                <label for="max_backups_in_ha">Max Backups in HA</label>
+              </div>
+              <div class="input-field col s12 m6">
+                <input id="max_backups_in_s3" type="number" min="0" step="1" name="max_backups_in_s3">
+                <label for="max_backups_in_s3">Max Backups in S3</label>
+                <span class="helper-text">0 = unlimited</span>
+              </div>
+              <div class="col s12" style="margin-top: 8px;">
+                <label>
+                  <input type="checkbox" id="delete_after_upload" name="delete_after_upload" class="filled-in">
+                  <span>Delete from HA after successful S3 upload</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="row" style="margin-top: 16px;">
+            <div class="col s12">
+              <a href="#" class="btn blue darken-2 waves-effect waves-light" onclick="testConnection(event)" style="margin-right: 8px;">
+                <i class="material-icons left">wifi_tethering</i>Test Connection
+              </a>
+              <a href="#" class="btn green waves-effect waves-light" onclick="saveSettings(event)">
+                <i class="material-icons left">save</i>Save
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- LOGS TAB                                                      -->
+    <!-- ============================================================ -->
+    <div id="tab-logs" class="white z-depth-1" style="border-radius: 0 0 4px 4px; padding: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+        <span class="grey-text text-darken-1" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+          Application Logs
+        </span>
+        <div style="display: flex; align-items: center; gap: 16px;">
+          <div class="input-field" style="margin: 0; min-width: 140px;">
+            <select id="log-level-filter" onchange="filterLogs()">
+              <option value="ALL">All Levels</option>
+              <option value="DEBUG">Debug</option>
+              <option value="INFO">Info</option>
+              <option value="WARNING">Warning</option>
+              <option value="ERROR">Error</option>
+            </select>
+          </div>
+          <label style="display: flex; align-items: center; gap: 4px; cursor: pointer; white-space: nowrap;">
+            <input type="checkbox" id="log-auto-refresh" checked class="filled-in" onchange="toggleLogRefresh()">
+            <span>Auto-refresh</span>
+          </label>
+        </div>
+      </div>
+      <div id="log-container">
+        <table class="striped log-table">
+          <colgroup>
+            <col style="width: 170px;">
+            <col style="width: 80px;">
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Level</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+          <tbody id="log-tbody">
+            <tr><td colspan="3" class="center-align grey-text" style="padding: 32px;">Loading logs…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <!-- Confirm Delete Modal -->
+  <div id="modal-delete" class="modal">
+    <div class="modal-content">
+      <h5><i class="material-icons red-text left">warning</i>Confirm Delete</h5>
+      <p id="modal-delete-msg">Are you sure?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close btn-flat waves-effect">Cancel</a>
+      <a href="#!" class="btn red waves-effect waves-light" id="modal-delete-confirm">
+        <i class="material-icons left">delete</i>Delete
+      </a>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="static/app.js"></script>
+</body>
+</html>

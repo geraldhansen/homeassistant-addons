@@ -40,12 +40,12 @@ The add-on includes a modern web interface with the following pages:
 Configure the add-on through either the Home Assistant add-on configuration or the built-in web interface:
 
 ```yaml
-aws_access_key_id: "your-access-key"
-aws_secret_access_key: "your-secret-key"
-bucket_name: "your-backup-bucket"
+s3_bucket: "your-backup-bucket"
+s3_region: "us-east-1"
+s3_access_key: "your-access-key"
+s3_secret_key: "your-secret-key"
+s3_prefix: "ha-backups/"
 endpoint_url: ""  # Optional: for S3-compatible services
-bucket_region: "us-east-1"
-storage_class: "STANDARD"
 delete_local_backups: true
 local_backups_to_keep: 4
 ```
@@ -72,3 +72,34 @@ This add-on works with various S3-compatible services:
 ## Support
 
 For issues and feature requests, please use the GitHub repository.
+
+## Local Development
+
+### Prerequisites
+
+- [VS Code](https://code.visualstudio.com/)
+- [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) (`ms-vscode-remote.remote-containers`)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+### First-time setup
+
+1. Open this folder in VS Code
+2. When prompted, click **Reopen in Container** — or use the Command Palette (`Cmd+Shift+P`) → **Dev Containers: Reopen in Container**
+3. Wait for the container to build (pulls `ghcr.io/home-assistant/devcontainer:addons`)
+
+### Starting Home Assistant
+
+After the container is running:
+
+- **Terminal → Run Task → Start Home Assistant**, or
+- Press `Cmd+Shift+P` → **Tasks: Run Test Task**
+
+Home Assistant will be available at **http://localhost:7123/**
+
+Your add-on appears automatically under **Settings → Add-ons → Local add-ons**.
+
+### Notes
+
+- Port `7123` is used instead of the default `8123` to avoid conflicts with a local Home Assistant instance
+- The devcontainer image supports both `amd64` and `arm64` — Apple Silicon works natively
+- To force a local build instead of pulling a published image, comment out the `image:` key in `config.yaml`

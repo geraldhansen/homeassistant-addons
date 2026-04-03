@@ -1,10 +1,9 @@
 name: "S3 Backup"
-version: "0.0.6"
-slug: s3-backup
 description: "Comprehensive S3 backup solution with modern web interface for managing Home Assistant backups"
 url: "https://github.com/geraldhansen/homeassistant-addons/tree/main/s3-backup"
-
-# Architecture support
+version: "0.0.7"
+slug: "s3-backup"
+init: false
 arch:
   - aarch64
   - amd64
@@ -12,51 +11,38 @@ arch:
   - armv7
   - i386
 
-# Add-on configuration
-boot: manual
-init: false
-startup: once
-advanced: true
 hassio_api: true
-hassio_role: backup
+hassio_role: admin
+auth_api: false
+
 ingress: true
+ingress_port: 8099
 panel_icon: mdi:pail
-panel_title: "S3 Backups"
-webui: "http://[HOST]:[PORT:8099]"
+panel_title: S3 Backup
 
-# File system mappings
 map:
-  - "backup:rw"
+  - backup:rw
 
-# Default options
 options:
-  aws_access_key_id: ""
-  aws_secret_access_key: ""
-  bucket_name: ""
-  endpoint_url: ""
-  bucket_region: "us-east-1"
-  storage_class: "STANDARD"
-  delete_local_backups: true
-  local_backups_to_keep: 4
+  s3_endpoint: ""
+  s3_bucket: ""
+  s3_region: "us-east-1"
+  s3_access_key: ""
+  s3_secret_key: ""
+  s3_prefix: "ha-backups/"
+  days_between_backups: 3
+  max_backups_in_ha: 4
+  max_backups_in_s3: 4
+  delete_after_upload: false
 
-# Configuration schema
 schema:
-  aws_access_key_id: str
-  aws_secret_access_key: password
-  bucket_name: str
-  endpoint_url: str?
-  bucket_region: str?
-  storage_class: list(STANDARD|STANDARD_IA|GLACIER|DEEP_ARCHIVE)?
-  delete_local_backups: bool
-  local_backups_to_keep: int(1,50)
-
-# Build labels
-labels:
-  org.opencontainers.image.title: "Home Assistant Add-on: S3 Backup"
-  org.opencontainers.image.description: "S3 Backup add-on."
-  org.opencontainers.image.source: "https://github.com/geraldhansen/homeassistant-addons"
-  org.opencontainers.image.licenses: "Apache License 2.0"
-
-# Build arguments
-args:
-  TEMPIO_VERSION: "2021.09.0"
+  s3_endpoint: str
+  s3_bucket: str
+  s3_region: str
+  s3_access_key: str
+  s3_secret_key: str
+  s3_prefix: str
+  days_between_backups: int
+  max_backups_in_ha: int
+  max_backups_in_s3: int
+  delete_after_upload: bool
