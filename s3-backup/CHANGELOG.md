@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.9
+
+Make logging configurable
+
 ## 0.0.8
 
 Test S3 functions

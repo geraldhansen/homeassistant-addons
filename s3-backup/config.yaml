@@ -1,7 +1,7 @@
 name: "S3 Backup"
 description: "Comprehensive S3 backup solution with modern web interface for managing Home Assistant backups"
 url: "https://github.com/geraldhansen/homeassistant-addons/tree/main/s3-backup"
-version: "0.0.8"
+version: "0.0.9"
 slug: "s3-backup"
 init: false
 arch:
@@ -34,6 +34,7 @@ options:
   max_backups_in_ha: 4
   max_backups_in_s3: 4
   delete_after_upload: false
+  log_level: "INFO"
 
 schema:
   s3_endpoint: str
@@ -46,3 +47,4 @@ schema:
   max_backups_in_ha: int
   max_backups_in_s3: int
   delete_after_upload: bool
+  log_level: "list(DEBUG|INFO|WARNING|ERROR)"

@@ -90,7 +90,8 @@ def create_app(coordinator, log_buffer):
 
         new_config.save()
         coordinator.reload_config(new_config)
-        logger.info("Settings saved and reloaded")
+        logging.getLogger().setLevel(getattr(logging, new_config.log_level.upper(), logging.INFO))
+        logger.info("Settings saved and reloaded (log_level=%s)", new_config.log_level)
         return jsonify({"ok": True})
 
     @app.route("/api/logs")

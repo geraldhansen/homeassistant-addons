@@ -93,6 +93,7 @@ After the container is running:
 
 - **Terminal → Run Task → Start Home Assistant**, or
 - Press `Cmd+Shift+P` → **Tasks: Run Test Task**
+- `supervisor_run`
 
 Home Assistant will be available at **http://localhost:7123/**
 

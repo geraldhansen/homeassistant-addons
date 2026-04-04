@@ -5,29 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="ingress-path" content="__INGRESS_PATH__">
   <title>S3 Backup</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.x/css/materialdesignicons.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
   <link href="static/style.css" rel="stylesheet">
 </head>
 <body class="grey lighten-4">
 
   <!-- Navigation -->
-  <nav class="blue darken-2 z-depth-2">
+  <nav class="white z-depth-2">
     <div class="nav-wrapper container">
-      <a href="#" class="brand-logo">
-        <i class="material-icons">backup</i>
+      <a href="#" class="blue-text text-darken-2 brand-logo">
+        <i class="mdi mdi-pail"></i>
         <span>S3 Backups</span>
       </a>
       <ul class="right">
         <li>
-          <a href="#" id="btn-backup-now" onclick="triggerBackup(event)" class="nav-action">
-            <i class="material-icons left">add_circle_outline</i>
+          <a href="#" id="btn-backup-now" onclick="triggerBackup(event)" class="nav-action blue-text text-darken-2">
+            <i class="mdi mdi-plus-circle-outline left"></i>
             <span class="hide-on-small-only">Backup Now</span>
           </a>
         </li>
         <li>
-          <a href="#" id="btn-sync-now" onclick="triggerSync(event)" class="nav-action">
-            <i class="material-icons left" id="sync-icon">sync</i>
+          <a href="#" id="btn-sync-now" onclick="triggerSync(event)" class="nav-action blue-text text-darken-2">
+            <i class="mdi mdi-sync left" id="sync-icon"></i>
             <span class="hide-on-small-only">Sync</span>
           </a>
         </li>
@@ -43,17 +43,17 @@
         <ul class="tabs tabs-fixed-width white z-depth-1" id="main-tabs" style="border-radius: 4px 4px 0 0;">
           <li class="tab col s4">
             <a href="#tab-backups" class="active blue-text text-darken-2">
-              <i class="material-icons tiny">list</i> Backups
+              <i class="mdi mdi-format-list-bulleted mdi-18px"></i> Backups
             </a>
           </li>
           <li class="tab col s4">
             <a href="#tab-settings" class="blue-text text-darken-2">
-              <i class="material-icons tiny">settings</i> Settings
+              <i class="mdi mdi-cog mdi-18px"></i> Settings
             </a>
           </li>
           <li class="tab col s4">
             <a href="#tab-logs" class="blue-text text-darken-2">
-              <i class="material-icons tiny">subject</i> Logs
+              <i class="mdi mdi-text mdi-18px"></i> Logs
             </a>
           </li>
         </ul>
@@ -70,7 +70,7 @@
         <div class="col s12 m6 l3">
           <div class="card status-card" id="card-last-backup">
             <div class="card-content center-align">
-              <i class="material-icons status-icon" id="icon-last-backup">access_time</i>
+              <i class="mdi mdi-clock-outline status-icon" id="icon-last-backup" data-mdi-icon="mdi-clock-outline"></i>
               <div class="status-label">Last Backup</div>
               <div class="status-value" id="val-last-backup">Loading…</div>
             </div>
@@ -79,7 +79,7 @@
         <div class="col s12 m6 l3">
           <div class="card status-card" id="card-next-backup">
             <div class="card-content center-align">
-              <i class="material-icons status-icon" id="icon-next-backup">schedule</i>
+              <i class="mdi mdi-clock-time-four-outline status-icon" id="icon-next-backup" data-mdi-icon="mdi-clock-time-four-outline"></i>
               <div class="status-label">Next Backup</div>
               <div class="status-value" id="val-next-backup">Loading…</div>
             </div>
@@ -88,7 +88,7 @@
         <div class="col s12 m6 l3">
           <div class="card status-card neutral">
             <div class="card-content center-align">
-              <i class="material-icons status-icon blue-text">home</i>
+              <i class="mdi mdi-home status-icon blue-text"></i>
               <div class="status-label">In Home Assistant</div>
               <div class="status-value" id="val-ha-count">–</div>
             </div>
@@ -97,7 +97,7 @@
         <div class="col s12 m6 l3">
           <div class="card status-card neutral">
             <div class="card-content center-align">
-              <i class="material-icons status-icon blue-text">cloud</i>
+              <i class="mdi mdi-cloud status-icon blue-text"></i>
               <div class="status-label">In S3</div>
               <div class="status-value" id="val-s3-count">–</div>
             </div>
@@ -110,7 +110,7 @@
         <div class="col s12">
           <div id="error-card" class="card" style="border-left: 4px solid #e53935;">
             <div class="card-content" id="error-card-content" style="padding: 12px 16px;">
-              <i class="material-icons left tiny" id="error-icon" style="margin-top: 2px;">error</i>
+              <i class="mdi mdi-alert-circle left" id="error-icon" style="margin-top: 2px;"></i>
               <span id="error-message"></span>
             </div>
           </div>
@@ -163,7 +163,7 @@
           <!-- S3 Configuration -->
           <div class="settings-section">
             <div class="settings-section-title">
-              <i class="material-icons blue-text text-darken-2">cloud</i>
+              <i class="mdi mdi-cloud blue-text text-darken-2"></i>
               S3 Configuration
             </div>
             <div class="row" style="margin-bottom: 0;">
@@ -200,7 +200,7 @@
           <!-- Backup Schedule -->
           <div class="settings-section">
             <div class="settings-section-title">
-              <i class="material-icons blue-text text-darken-2">schedule</i>
+              <i class="mdi mdi-clock-time-four-outline blue-text text-darken-2"></i>
               Backup Schedule
             </div>
             <div class="row" style="margin-bottom: 0;">
@@ -215,7 +215,7 @@
           <!-- Retention -->
           <div class="settings-section">
             <div class="settings-section-title">
-              <i class="material-icons blue-text text-darken-2">delete_sweep</i>
+              <i class="mdi mdi-delete-sweep blue-text text-darken-2"></i>
               Retention Policy
             </div>
             <div class="row" style="margin-bottom: 0;">
@@ -237,14 +237,33 @@
             </div>
           </div>
 
+          <!-- Logging -->
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="mdi mdi-text-box-outline blue-text text-darken-2"></i>
+              Logging
+            </div>
+            <div class="row" style="margin-bottom: 0;">
+              <div class="input-field col s12 m4">
+                <select id="log_level" name="log_level">
+                  <option value="DEBUG">Debug</option>
+                  <option value="INFO" selected>Info</option>
+                  <option value="WARNING">Warning</option>
+                  <option value="ERROR">Error</option>
+                </select>
+                <label>Log Level</label>
+              </div>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="row" style="margin-top: 16px;">
             <div class="col s12">
               <a href="#" class="btn blue darken-2 waves-effect waves-light" onclick="testConnection(event)" style="margin-right: 8px;">
-                <i class="material-icons left">wifi_tethering</i>Test Connection
+                <i class="mdi mdi-wifi left"></i>Test Connection
               </a>
               <a href="#" class="btn green waves-effect waves-light" onclick="saveSettings(event)">
-                <i class="material-icons left">save</i>Save
+                <i class="mdi mdi-content-save left"></i>Save
               </a>
             </div>
           </div>
@@ -303,13 +322,13 @@
   <!-- Confirm Delete Modal -->
   <div id="modal-delete" class="modal">
     <div class="modal-content">
-      <h5><i class="material-icons red-text left">warning</i>Confirm Delete</h5>
+      <h5><i class="mdi mdi-alert red-text left"></i>Confirm Delete</h5>
       <p id="modal-delete-msg">Are you sure?</p>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close btn-flat waves-effect">Cancel</a>
       <a href="#!" class="btn red waves-effect waves-light" id="modal-delete-confirm">
-        <i class="material-icons left">delete</i>Delete
+        <i class="mdi mdi-delete left"></i>Delete
       </a>
     </div>
   </div>

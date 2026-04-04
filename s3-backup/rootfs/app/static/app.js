@@ -50,9 +50,9 @@ function esc(str) {
 }
 
 function toast(msg, type = "blue darken-1") {
-  const icon = type.startsWith("red") ? "error" : type.startsWith("green") ? "check_circle" : "info";
+  const icon = type.startsWith("red") ? "mdi-alert-circle" : type.startsWith("green") ? "mdi-check-circle" : "mdi-information";
   M.toast({
-    html: `<i class="material-icons left tiny">${icon}</i>${esc(msg)}`,
+    html: `<i class="mdi ${icon}" style="margin-right:8px;vertical-align:middle;"></i>${esc(msg)}`,
     classes: type,
     displayLength: 3500,
   });
@@ -83,7 +83,7 @@ function setCardState(cardId, iconId, valueId, value, state /* healthy|warning|e
   const card = document.getElementById(cardId);
   const icon = document.getElementById(iconId);
   card.className = "card status-card " + state;
-  icon.className = "material-icons status-icon " + state;
+  icon.className = `mdi ${icon.dataset.mdiIcon || ""} status-icon ${state}`;
 }
 
 function updateStatusCards(data) {
@@ -133,29 +133,29 @@ function updateBackupTable(backups) {
     const date = b.in_ha ? formatDate(b.date) : formatDate(b.s3_date);
 
     const haBadge = b.in_ha
-      ? `<span class="badge-location badge-present"><i class="material-icons" style="font-size:12px;">check</i>HA</span>`
-      : `<span class="badge-location badge-missing"><i class="material-icons" style="font-size:12px;">close</i>HA</span>`;
+      ? `<span class="badge-location badge-present"><i class="mdi mdi-check" style="font-size:12px;"></i>HA</span>`
+      : `<span class="badge-location badge-missing"><i class="mdi mdi-close" style="font-size:12px;"></i>HA</span>`;
 
     const s3Badge = b.in_s3
-      ? `<span class="badge-location badge-present"><i class="material-icons" style="font-size:12px;">cloud_done</i>S3</span>`
-      : `<span class="badge-location badge-missing"><i class="material-icons" style="font-size:12px;">cloud_off</i>S3</span>`;
+      ? `<span class="badge-location badge-present"><i class="mdi mdi-cloud-check" style="font-size:12px;"></i>S3</span>`
+      : `<span class="badge-location badge-missing"><i class="mdi mdi-cloud-off-outline" style="font-size:12px;"></i>S3</span>`;
 
     const uploadBtn = b.in_ha && !b.in_s3
       ? `<a href="#" class="btn-small blue darken-2 waves-effect waves-light action-btn tooltipped"
            data-tooltip="Upload to S3" onclick="doUpload(event,'${b.slug}')">
-           <i class="material-icons">cloud_upload</i></a>`
+           <i class="mdi mdi-cloud-upload"></i></a>`
       : "";
 
     const delHaBtn = b.in_ha
       ? `<a href="#" class="btn-small red lighten-1 waves-effect action-btn tooltipped"
            data-tooltip="Delete from HA" onclick="doDeleteHA(event,'${b.slug}','${esc(b.name)}')">
-           <i class="material-icons">home</i></a>`
+           <i class="mdi mdi-home"></i></a>`
       : "";
 
     const delS3Btn = b.in_s3
       ? `<a href="#" class="btn-small red waves-effect action-btn tooltipped"
            data-tooltip="Delete from S3" onclick="doDeleteS3(event,'${b.slug}','${esc(b.name)}')">
-           <i class="material-icons">cloud</i></a>`
+           <i class="mdi mdi-cloud"></i></a>`
       : "";
 
     return `<tr>
@@ -193,7 +193,7 @@ function showBanner(msg, type = "error") {
   const isWarn = type === "warning";
   document.getElementById("error-banner").style.display = "block";
   document.getElementById("error-message").textContent = msg;
-  document.getElementById("error-icon").textContent = isWarn ? "info" : "error";
+  document.getElementById("error-icon").className = `mdi ${isWarn ? "mdi-information" : "mdi-alert-circle"} left`;
   const card = document.getElementById("error-card");
   const content = document.getElementById("error-card-content");
   card.style.borderLeftColor = isWarn ? "#fb8c00" : "#e53935";
@@ -298,6 +298,7 @@ async function loadSettings() {
     const fields = [
       "s3_endpoint", "s3_bucket", "s3_region", "s3_access_key",
       "s3_prefix", "days_between_backups", "max_backups_in_ha", "max_backups_in_s3",
+      "log_level",
     ];
     fields.forEach(f => {
       const el = document.getElementById(f);
@@ -311,6 +312,7 @@ async function loadSettings() {
     if (chk) chk.checked = !!s.delete_after_upload;
 
     M.updateTextFields();
+    M.FormSelect.init(document.getElementById("log_level"));
   } catch (err) {
     toast("Failed to load settings: " + err.message, "red darken-1");
   }
@@ -328,6 +330,7 @@ function collectSettings() {
     max_backups_in_ha:     parseInt(document.getElementById("max_backups_in_ha").value) || 4,
     max_backups_in_s3:     parseInt(document.getElementById("max_backups_in_s3").value) || 4,
     delete_after_upload:   document.getElementById("delete_after_upload").checked,
+    log_level:             document.getElementById("log_level").value,
   };
 }
 
