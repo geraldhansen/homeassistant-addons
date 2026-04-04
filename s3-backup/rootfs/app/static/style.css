@@ -117,7 +117,7 @@ nav .brand-logo {
   gap: 8px;
   font-size: 1rem;
   font-weight: 500;
-  color: #424242;
+  color: #000000;
   margin-bottom: 12px;
 }
 
@@ -160,7 +160,7 @@ nav .brand-logo {
 }
 
 .tabs .indicator {
-  background-color: #1565c0;
+  background-color: #ffffff;
 }
 
 /* ---- Rotating sync icon ---- */

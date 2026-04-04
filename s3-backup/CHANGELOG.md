@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.8
+
+Test S3 functions
+
 ## 0.0.7
 
 First new refactoring

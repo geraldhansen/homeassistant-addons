@@ -1,7 +1,7 @@
 name: "S3 Backup"
 description: "Comprehensive S3 backup solution with modern web interface for managing Home Assistant backups"
 url: "https://github.com/geraldhansen/homeassistant-addons/tree/main/s3-backup"
-version: "0.0.7"
+version: "0.0.8"
 slug: "s3-backup"
 init: false
 arch:

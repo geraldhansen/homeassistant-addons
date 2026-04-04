@@ -69,6 +69,7 @@ def create_app(coordinator, log_buffer):
 
     @app.route("/api/settings", methods=["POST"])
     def api_save_settings():
+        logger.debug("/api/settings called with body: %s", request.get_json())
         from .config import Config
         body = request.get_json(silent=True) or {}
         test_only = body.pop("test_only", False)
