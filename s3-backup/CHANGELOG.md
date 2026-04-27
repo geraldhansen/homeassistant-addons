@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.10
+
+Name the uploaded backups like the local stored ones
+
 ## 0.0.9
 
 Make logging configurable
