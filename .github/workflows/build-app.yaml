@@ -57,8 +57,9 @@ jobs:
         id: build_from
         run: |
           if [[ -f "./${{ inputs.app }}/build.yaml" ]]; then
-            value=$(yq -r ".build_from.${{ matrix.arch }} // empty" \
+            value=$(yq ".build_from.${{ matrix.arch }}" \
               "./${{ inputs.app }}/build.yaml")
+            [[ "$value" == "null" ]] && value=""
             echo "value=${value}" >> "$GITHUB_OUTPUT"
           fi
 
