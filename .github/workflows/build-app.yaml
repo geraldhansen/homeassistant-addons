@@ -17,13 +17,12 @@ jobs:
     name: Prepare ${{ inputs.app }}
     runs-on: ubuntu-latest
     outputs:
-      image: ${{ steps.info.outputs.image }}
-      version: ${{ steps.info.outputs.version }}
+      version: ${{ steps.config.outputs.version }}
       architectures: ${{ steps.info.outputs.architectures }}
       matrix: ${{ steps.matrix.outputs.matrix }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Get add-on information
         id: info
@@ -31,12 +30,22 @@ jobs:
         with:
           path: "./${{ inputs.app }}"
 
+      # info@master may output version with surrounding YAML quotes ("1.0.1").
+      # Read it directly via yq to guarantee a clean scalar value.
+      - name: Read version from config.yaml
+        id: config
+        run: |
+          version=$(yq '.version' "./${{ inputs.app }}/config.yaml")
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
       - name: Prepare build matrix
         id: matrix
         uses: home-assistant/builder/actions/prepare-multi-arch-matrix@2026.09.0
         with:
           architectures: ${{ steps.info.outputs.architectures }}
-          image-name: ${{ steps.info.outputs.image }}
+          # image-name is the slug without arch; the action prepends "{arch}-"
+          # and wraps with ghcr.io/{owner}/ to produce the per-arch image reference.
+          image-name: ${{ inputs.app }}
 
   build:
     name: Build ${{ matrix.arch }} — ${{ inputs.app }}
@@ -51,7 +60,7 @@ jobs:
       matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - name: Check out repository
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@v7.0.1
 
       - name: Read BUILD_FROM from build.yaml
         id: build_from
@@ -91,7 +100,7 @@ jobs:
         uses: home-assistant/builder/actions/publish-multi-arch-manifest@2026.09.0
         with:
           architectures: ${{ needs.prepare.outputs.architectures }}
-          image-name: ${{ needs.prepare.outputs.image }}
+          image-name: ${{ inputs.app }}
           image-tags: |
             ${{ needs.prepare.outputs.version }}
             latest
