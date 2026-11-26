@@ -52,6 +52,24 @@ def create_app(coordinator, log_buffer):
     def api_upload(slug):
         return jsonify(coordinator.upload_to_s3(slug))
 
+    @app.route("/api/download/<slug>")
+    def api_download(slug):
+        result = coordinator.open_download(slug)
+        if result is None:
+            return jsonify({"error": f"Backup {slug} not found"}), 404
+        filename, size, chunks, close = result
+
+        def generate():
+            try:
+                yield from chunks
+            finally:
+                close()
+
+        headers = {"Content-Disposition": f'attachment; filename="{filename}"'}
+        if size is not None:
+            headers["Content-Length"] = str(size)
+        return Response(generate(), content_type="application/x-tar", headers=headers)
+
     @app.route("/api/ha/<slug>", methods=["DELETE"])
     def api_delete_ha(slug):
         return jsonify(coordinator.delete_from_ha(slug))

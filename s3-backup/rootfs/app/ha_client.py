@@ -56,3 +56,14 @@ class HAClient:
         )
         resp.raise_for_status()
         return resp.content
+
+    def stream_backup(self, slug: str):
+        """Open a streaming response for a backup download from the supervisor."""
+        resp = requests.get(
+            f"{self.config.supervisor_url}/backups/{slug}/download",
+            headers=self._headers(),
+            stream=True,
+            timeout=(30, 3600),
+        )
+        resp.raise_for_status()
+        return resp
