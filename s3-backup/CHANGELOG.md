@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.0
+
+2026-11-26 Backup download and documentation update
+* New download button in the Action column of the Backups table (streams from HA or S3)
+* Documentation: removed the obsolete Home Assistant automation examples, the add-on syncs automatically
+* Documentation: added a note about saving the encryption key / emergency kit
+* Dropped armv7 architecture support
+
 ## 1.0.1
 
 2026-06-23 Tiny layout adaptations
