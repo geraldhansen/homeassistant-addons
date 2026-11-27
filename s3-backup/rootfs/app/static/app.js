@@ -146,6 +146,10 @@ function updateBackupTable(backups) {
            <i class="mdi mdi-cloud-upload"></i></a>`
       : "";
 
+    const downloadBtn = `<a href="${BASE}/api/download/${encodeURIComponent(b.slug)}" download
+           class="btn-small teal darken-1 waves-effect waves-light action-btn tooltipped"
+           data-tooltip="Download backup"><i class="mdi mdi-download"></i></a>`;
+
     const delHaBtn = b.in_ha
       ? `<a href="#" class="btn-small red lighten-1 waves-effect action-btn tooltipped"
            data-tooltip="Delete from HA" onclick="doDeleteHA(event,'${b.slug}','${esc(b.name)}')">
@@ -164,7 +168,7 @@ function updateBackupTable(backups) {
       <td>${size}</td>
       <td>${haBadge}</td>
       <td>${s3Badge}</td>
-      <td style="white-space:nowrap;">${uploadBtn}${delHaBtn}${delS3Btn}</td>
+      <td style="white-space:nowrap;">${downloadBtn}${uploadBtn}${delHaBtn}${delS3Btn}</td>
     </tr>`;
   }).join("");
 

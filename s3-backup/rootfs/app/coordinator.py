@@ -134,6 +134,35 @@ class Coordinator:
             logger.error("upload_to_s3 failed: %s", e)
             return {"error": str(e)}
 
+    def open_download(self, slug: str):
+        """
+        Return (filename, content_length_or_None, chunk_iterator, close_fn) for a
+        backup, preferring the local HA copy and falling back to S3. Returns None
+        if the backup cannot be found.
+        """
+        info = next((b for b in self._state["backups"] if b["slug"] == slug), None)
+        name = info["name"] if info else slug
+        filename = f"{self.s3._sanitize_name_for_key(name, slug)}.tar"
+
+        if info is None or info["in_ha"]:
+            file_path = os.path.join(BACKUP_DIR, f"{slug}.tar")
+            if os.path.exists(file_path):
+                f = open(file_path, "rb")
+                size = os.path.getsize(file_path)
+                return filename, size, iter(lambda: f.read(1024 * 1024), b""), f.close
+            if info is not None:
+                resp = self.ha.stream_backup(slug)
+                length = resp.headers.get("Content-Length")
+                return (filename, int(length) if length else None,
+                        resp.iter_content(1024 * 1024), resp.close)
+
+        if self.config.is_s3_configured():
+            obj = self.s3.open_backup(slug)
+            if obj is not None:
+                body = obj["Body"]
+                return filename, obj.get("ContentLength"), body.iter_chunks(1024 * 1024), body.close
+        return None
+
     def delete_from_ha(self, slug: str) -> Dict[str, Any]:
         if not self.ha.delete_backup(slug):
             return {"error": f"Failed to delete {slug} from HA"}

@@ -43,39 +43,16 @@ This add-on features a comprehensive web interface with three main sections:
 
 1. Set the `aws_access_key`, `aws_secret_access_key`, and `bucket_name`. 
 2. Optionally / if necessary, change `bucket_region`, `storage_class`, and `delete_local_backups` and `local_backups_to_keep` configuration options.
-3. Start the add-on to sync the `/backup/` directory to the configured `bucket_name` on Amazon S3. You can also automate this of course, see example below:
+3. Start the add-on. It runs continuously and syncs your backups to the configured `bucket_name` automatically (checked hourly), so no Home Assistant automation is needed.
 
-## Automation
+## Encryption key (important)
 
-To automate your backup creation and syncing to a S3 bucket, add these two automations in Home Assistants `configuration.yaml` and change it to your needs:
-```
-automation:
-  # create a full backup
-  - id: backup_create_full_backup
-    alias: Create a full backup every day at 4am
-    trigger:
-      platform: time
-      at: "04:00:00"
-    action:
-      service: hassio.backup_full
-      data:
-        # uses the 'now' object of the trigger to create a more user friendly name (e.g.: '202101010400_automated-backup')
-        name: "{{as_timestamp(trigger.now)|timestamp_custom('%Y%m%d%H%M', true)}}_automated-backup"
+Home Assistant encrypts your backups. Without the encryption key you **cannot restore** them, even though they are safely stored in S3. Save the key somewhere safe and outside of Home Assistant:
 
-  # Starts the addon 15 minutes after every hour to make sure it syncs all backups, also manual ones, as soon as possible
-  - id: backup_upload_to_s3
-    alias: Upload to S3
-    trigger:
-      platform: time_pattern
-      # Matches every hour at 15 minutes past every hour
-      minutes: 15
-    action:
-      service: hassio.addon_start
-      data:
-      addon: XXXXX_s3-backup
-```
+- **Settings** -> **System** -> **Backup** -> **Show my encryption key**, or
+- **Settings** -> **System** -> **Backup** -> **Download emergency kit**
 
-The automation above first creates a full backup at 4am, and then at 4:15am syncs to Amazon S3 and if configured deletes local backups according to your configuration.
+For details, see the [Home Assistant emergency kit documentation](https://www.home-assistant.io/more-info/backup-emergency-kit).
 
 ## Configuration
 

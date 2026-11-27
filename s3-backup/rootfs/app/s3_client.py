@@ -139,6 +139,17 @@ class S3Client:
             logger.error("S3 upload_file failed for %s: %s", slug, e)
             return False
 
+    def open_backup(self, slug: str):
+        """Return the S3 get_object response for a backup slug, or None if not found."""
+        client = self._get_client()
+        key = next((b["key"] for b in self.list_backups() if b["slug"] == slug), None)
+        if key is None:
+            key = f"{self.config.s3_prefix}{slug}.tar"
+        try:
+            return client.get_object(Bucket=self.config.s3_bucket, Key=key)
+        except client.exceptions.NoSuchKey:
+            return None
+
     def delete(self, slug: str) -> bool:
         try:
             client = self._get_client()
